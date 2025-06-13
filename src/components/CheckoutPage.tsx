@@ -5,19 +5,27 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { CreditCard, Smartphone } from 'lucide-react';
+import { CreditCard } from 'lucide-react';
 
 interface CheckoutState {
   hasCoupon: boolean;
   hasWeeklySubscription: boolean;
   paymentMethod: 'mpesa' | 'card';
+  showCouponInput: boolean;
+  couponCode: string;
+  couponError: string;
+  couponApplied: boolean;
 }
 
 const CheckoutPage = () => {
   const [state, setState] = useState<CheckoutState>({
     hasCoupon: false,
     hasWeeklySubscription: false,
-    paymentMethod: 'mpesa'
+    paymentMethod: 'mpesa',
+    showCouponInput: false,
+    couponCode: '',
+    couponError: '',
+    couponApplied: false
   });
 
   const basePrice = 900;
@@ -26,13 +34,31 @@ const CheckoutPage = () => {
 
   const calculateTotal = () => {
     let total = basePrice;
-    if (state.hasCoupon) {
+    if (state.couponApplied) {
       total -= couponDiscount;
     }
     if (state.hasWeeklySubscription) {
       total -= proRataDiscount;
     }
     return total;
+  };
+
+  const handleApplyCoupon = () => {
+    if (state.couponCode.trim() === 'NMG100') {
+      setState(prev => ({ 
+        ...prev, 
+        couponApplied: true, 
+        couponError: '',
+        hasCoupon: true 
+      }));
+    } else {
+      setState(prev => ({ 
+        ...prev, 
+        couponError: 'Invalid coupon code',
+        couponApplied: false,
+        hasCoupon: false 
+      }));
+    }
   };
 
   const finalPrice = calculateTotal();
@@ -67,7 +93,7 @@ const CheckoutPage = () => {
                   </div>
 
                   {/* Coupon Section */}
-                  {state.hasCoupon && (
+                  {state.couponApplied && (
                     <div className="flex justify-between items-center text-green-600">
                       <span>Discount Coupon (NMG100)</span>
                       <span>-KES {couponDiscount}</span>
@@ -76,7 +102,7 @@ const CheckoutPage = () => {
 
                   {/* Pro-rata Discount */}
                   {state.hasWeeklySubscription && (
-                    <div className="flex justify-between items-center text-blue-600">
+                    <div className="flex justify-between items-center text-green-600">
                       <span>Pro-rata Discount</span>
                       <span>-KES {proRataDiscount}</span>
                     </div>
@@ -92,17 +118,6 @@ const CheckoutPage = () => {
 
                 {/* Test Toggles */}
                 <div className="space-y-3 pt-4 border-t">
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="coupon"
-                      checked={state.hasCoupon}
-                      onChange={(e) => setState(prev => ({ ...prev, hasCoupon: e.target.checked }))}
-                      className="rounded"
-                    />
-                    <Label htmlFor="coupon" className="text-sm">Apply Coupon Code</Label>
-                  </div>
-                  
                   <div className="flex items-center space-x-2">
                     <input
                       type="checkbox"
@@ -131,7 +146,11 @@ const CheckoutPage = () => {
                   <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-gray-50 transition-colors">
                     <RadioGroupItem value="mpesa" id="mpesa" />
                     <Label htmlFor="mpesa" className="flex items-center space-x-3 cursor-pointer flex-1">
-                      <Smartphone className="h-6 w-6 text-green-600" />
+                      <img 
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/M-PESA_LOGO-01.svg/2560px-M-PESA_LOGO-01.svg.png" 
+                        alt="M-PESA" 
+                        className="h-6 w-auto"
+                      />
                       <div>
                         <div className="font-semibold">M-PESA</div>
                         <div className="text-sm text-gray-500">Pay with your mobile money</div>
@@ -151,21 +170,47 @@ const CheckoutPage = () => {
                   </div>
                 </RadioGroup>
 
-                {/* Coupon Code Input */}
-                {state.hasCoupon && (
-                  <div className="space-y-2">
-                    <Label htmlFor="couponCode">Coupon Code</Label>
-                    <div className="flex space-x-2">
-                      <Input 
-                        id="couponCode" 
-                        placeholder="Enter coupon code"
-                        defaultValue="NMG100"
-                        className="flex-1"
-                      />
-                      <Button variant="outline">Apply</Button>
+                {/* Coupon Code Section */}
+                <div className="space-y-3 pt-4 border-t">
+                  {!state.showCouponInput ? (
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-700">Have a coupon code?</span>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => setState(prev => ({ ...prev, showCouponInput: true }))}
+                        className="text-teal-600 border-teal-600 hover:bg-teal-50"
+                      >
+                        Click Here to Apply
+                      </Button>
                     </div>
-                  </div>
-                )}
+                  ) : (
+                    <div className="space-y-2">
+                      <Label htmlFor="couponCode">Coupon Code</Label>
+                      <div className="flex space-x-2">
+                        <Input 
+                          id="couponCode" 
+                          placeholder="Enter coupon code"
+                          value={state.couponCode}
+                          onChange={(e) => setState(prev => ({ ...prev, couponCode: e.target.value, couponError: '' }))}
+                          className="flex-1"
+                        />
+                        <Button 
+                          variant="outline"
+                          onClick={handleApplyCoupon}
+                        >
+                          Apply
+                        </Button>
+                      </div>
+                      {state.couponError && (
+                        <p className="text-red-500 text-sm">{state.couponError}</p>
+                      )}
+                      {state.couponApplied && (
+                        <p className="text-green-600 text-sm">Coupon applied successfully!</p>
+                      )}
+                    </div>
+                  )}
+                </div>
 
                 {/* Subscribe Button */}
                 <Button 
@@ -191,4 +236,3 @@ const CheckoutPage = () => {
 };
 
 export default CheckoutPage;
-
