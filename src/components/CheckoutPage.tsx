@@ -61,25 +61,29 @@ const CheckoutPage = () => {
     }
   };
 
+  const handleSubscribe = () => {
+    console.log('Subscribe clicked', { finalPrice, paymentMethod: state.paymentMethod });
+  };
+
   const finalPrice = calculateTotal();
 
   return (
     <TooltipProvider>
-      <div className="min-h-screen bg-gray-50 font-georgia">
-        <div className="container mx-auto py-8 px-4">
+      <div className="min-h-screen bg-gray-50 font-georgia pb-24 md:pb-8">
+        <div className="container mx-auto py-4 md:py-8 px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Daily Nation Subscription</h1>
+            <div className="text-center mb-6 md:mb-8">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Daily Nation Subscription</h1>
               <p className="text-gray-600">Complete your subscription to access premium content</p>
             </div>
             
-            <div className="grid lg:grid-cols-2 gap-8">
+            <div className="grid lg:grid-cols-2 gap-6 md:gap-8">
               {/* Left Side - Order Summary */}
               <Card className="shadow-lg">
                 <CardHeader>
-                  <CardTitle className="text-xl font-bold text-gray-900">Order Summary</CardTitle>
+                  <CardTitle className="text-lg md:text-xl font-bold text-gray-900">Order Summary</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className="space-y-4 md:space-y-6">
                   {/* Plan Details */}
                   <div className="border-b pb-4">
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">Monthly Plan</h3>
@@ -128,7 +132,7 @@ const CheckoutPage = () => {
                     </div>
                   </div>
 
-                  {/* Coupon Code Section - Moved to Left Side */}
+                  {/* Coupon Code Section */}
                   <div className="space-y-3 pt-4 border-t">
                     {!state.showCouponInput ? (
                       <div className="flex items-center justify-between">
@@ -189,63 +193,61 @@ const CheckoutPage = () => {
               {/* Right Side - Payment Method */}
               <Card className="shadow-lg">
                 <CardHeader>
-                  <CardTitle className="text-xl font-bold text-gray-900">Payment Method</CardTitle>
+                  <CardTitle className="text-lg md:text-xl font-bold text-gray-900">Payment Method</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="space-y-4">
+                <CardContent className="space-y-4 md:space-y-6">
+                  <div className="space-y-3">
                     <div 
-                      className={`p-6 border-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer ${
+                      className={`flex items-center justify-between p-4 border-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer ${
                         state.paymentMethod === 'mpesa' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
                       }`}
                       onClick={() => setState(prev => ({ ...prev, paymentMethod: 'mpesa' }))}
                     >
-                      <div className="flex items-center justify-center flex-col space-y-3">
-                        <img 
-                          src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/M-PESA_LOGO-01.svg/2560px-M-PESA_LOGO-01.svg.png" 
-                          alt="M-PESA" 
-                          className="h-8 w-auto"
-                        />
-                        <div className="text-center">
-                          <div className="font-semibold text-lg">M-PESA</div>
-                          <div className="text-sm text-gray-500">Pay with your mobile money</div>
-                        </div>
+                      <div>
+                        <div className="font-semibold text-base">M-PESA</div>
+                        <div className="text-sm text-gray-500">Pay with your mobile money</div>
                       </div>
+                      <img 
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/M-PESA_LOGO-01.svg/2560px-M-PESA_LOGO-01.svg.png" 
+                        alt="M-PESA" 
+                        className="h-8 w-auto"
+                      />
                     </div>
 
                     <div 
-                      className={`p-6 border-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer ${
+                      className={`flex items-center justify-between p-4 border-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer ${
                         state.paymentMethod === 'card' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
                       }`}
                       onClick={() => setState(prev => ({ ...prev, paymentMethod: 'card' }))}
                     >
-                      <div className="flex items-center justify-center flex-col space-y-3">
-                        <div className="flex space-x-2">
-                          <img 
-                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" 
-                            alt="Visa" 
-                            className="h-5 w-auto"
-                          />
-                          <img 
-                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" 
-                            alt="Mastercard" 
-                            className="h-5 w-auto"
-                          />
-                        </div>
-                        <div className="text-center">
-                          <div className="font-semibold text-lg">Card</div>
-                          <div className="text-sm text-gray-500">Visa, Mastercard accepted</div>
-                        </div>
+                      <div>
+                        <div className="font-semibold text-base">Card</div>
+                        <div className="text-sm text-gray-500">Visa, Mastercard accepted</div>
+                      </div>
+                      <div className="flex space-x-2">
+                        <img 
+                          src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" 
+                          alt="Visa" 
+                          className="h-5 w-auto"
+                        />
+                        <img 
+                          src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" 
+                          alt="Mastercard" 
+                          className="h-5 w-auto"
+                        />
                       </div>
                     </div>
                   </div>
 
-                  {/* Subscribe Button */}
-                  <Button 
-                    className="w-full h-12 text-lg font-semibold bg-blue-600 hover:bg-blue-700"
-                    onClick={() => console.log('Subscribe clicked', { finalPrice, paymentMethod: state.paymentMethod })}
-                  >
-                    Subscribe Now - KES {finalPrice}
-                  </Button>
+                  {/* Desktop Subscribe Button */}
+                  <div className="hidden md:block">
+                    <Button 
+                      className="w-full h-12 text-lg font-semibold bg-blue-600 hover:bg-blue-700"
+                      onClick={handleSubscribe}
+                    >
+                      Subscribe Now - KES {finalPrice}
+                    </Button>
+                  </div>
 
                   {/* Contact Info */}
                   <div className="text-center text-sm text-gray-500 pt-4 border-t">
@@ -257,6 +259,16 @@ const CheckoutPage = () => {
               </Card>
             </div>
           </div>
+        </div>
+
+        {/* Mobile Floating Subscribe Button */}
+        <div className="md:hidden fixed bottom-0 left-0 right-0 p-4 bg-white border-t shadow-lg z-50">
+          <Button 
+            className="w-full h-12 text-lg font-semibold bg-blue-600 hover:bg-blue-700"
+            onClick={handleSubscribe}
+          >
+            Subscribe Now - KES {finalPrice}
+          </Button>
         </div>
       </div>
     </TooltipProvider>
