@@ -194,43 +194,47 @@ const CheckoutPage = () => {
                 <CardContent className="space-y-6">
                   <div className="space-y-4">
                     <div 
-                      className={`flex items-center space-x-3 p-4 border-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer ${
+                      className={`p-6 border-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer ${
                         state.paymentMethod === 'mpesa' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
                       }`}
                       onClick={() => setState(prev => ({ ...prev, paymentMethod: 'mpesa' }))}
                     >
-                      <img 
-                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/M-PESA_LOGO-01.svg/2560px-M-PESA_LOGO-01.svg.png" 
-                        alt="M-PESA" 
-                        className="h-6 w-auto"
-                      />
-                      <div className="flex-1">
-                        <div className="font-semibold">M-PESA</div>
-                        <div className="text-sm text-gray-500">Pay with your mobile money</div>
+                      <div className="flex items-center justify-center flex-col space-y-3">
+                        <img 
+                          src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/M-PESA_LOGO-01.svg/2560px-M-PESA_LOGO-01.svg.png" 
+                          alt="M-PESA" 
+                          className="h-8 w-auto"
+                        />
+                        <div className="text-center">
+                          <div className="font-semibold text-lg">M-PESA</div>
+                          <div className="text-sm text-gray-500">Pay with your mobile money</div>
+                        </div>
                       </div>
                     </div>
 
                     <div 
-                      className={`flex items-center space-x-3 p-4 border-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer ${
+                      className={`p-6 border-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer ${
                         state.paymentMethod === 'card' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
                       }`}
                       onClick={() => setState(prev => ({ ...prev, paymentMethod: 'card' }))}
                     >
-                      <div className="flex space-x-2">
-                        <img 
-                          src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" 
-                          alt="Visa" 
-                          className="h-6 w-auto"
-                        />
-                        <img 
-                          src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" 
-                          alt="Mastercard" 
-                          className="h-6 w-auto"
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <div className="font-semibold">Card</div>
-                        <div className="text-sm text-gray-500">Visa, Mastercard accepted</div>
+                      <div className="flex items-center justify-center flex-col space-y-3">
+                        <div className="flex space-x-2">
+                          <img 
+                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" 
+                            alt="Visa" 
+                            className="h-5 w-auto"
+                          />
+                          <img 
+                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" 
+                            alt="Mastercard" 
+                            className="h-5 w-auto"
+                          />
+                        </div>
+                        <div className="text-center">
+                          <div className="font-semibold text-lg">Card</div>
+                          <div className="text-sm text-gray-500">Visa, Mastercard accepted</div>
+                        </div>
                       </div>
                     </div>
                   </div>
