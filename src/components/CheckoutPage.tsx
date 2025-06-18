@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -127,8 +126,10 @@ const CheckoutPage = () => {
               {/* Left Side - Order Summary */}
               <Card className="shadow-lg h-fit lg:h-full flex flex-col">
                 <CardHeader>
-                  <CardTitle className="text-base md:text-lg font-bold text-gray-900">Order Summary</CardTitle>
-                  <p className="text-xs text-gray-500 mt-1">user@example.com</p>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-base md:text-lg font-bold text-gray-900">Order Summary</CardTitle>
+                    <p className="text-sm text-gray-500">user@example.com</p>
+                  </div>
                 </CardHeader>
                 <CardContent className="space-y-4 md:space-y-6 flex-1">
                   {/* Plan Details */}
