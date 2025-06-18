@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -26,7 +27,7 @@ const CheckoutSettingsModal = ({ isOpen, onSettingsConfirm }: CheckoutSettingsMo
 
   return (
     <Dialog open={isOpen}>
-      <DialogContent className="sm:max-w-md [&>button]:hidden">
+      <DialogContent className="sm:max-w-md [&>button[data-state]]:hidden">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold text-center">Subscription Settings</DialogTitle>
         </DialogHeader>
