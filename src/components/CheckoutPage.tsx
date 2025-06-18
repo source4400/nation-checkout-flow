@@ -4,33 +4,42 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { CreditCard, Info } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import CheckoutSettingsModal from './CheckoutSettingsModal';
 
 interface CheckoutState {
   hasCoupon: boolean;
   hasWeeklySubscription: boolean;
+  isInternational: boolean;
   paymentMethod: 'mpesa' | 'card';
   showCouponInput: boolean;
   couponCode: string;
   couponError: string;
   couponApplied: boolean;
+  showModal: boolean;
+  settingsConfigured: boolean;
 }
 
 const CheckoutPage = () => {
   const [state, setState] = useState<CheckoutState>({
     hasCoupon: false,
     hasWeeklySubscription: false,
-    paymentMethod: 'mpesa',
+    isInternational: false,
+    paymentMethod: 'card',
     showCouponInput: false,
     couponCode: '',
     couponError: '',
-    couponApplied: false
+    couponApplied: false,
+    showModal: true,
+    settingsConfigured: false
   });
 
-  const basePrice = 900;
-  const couponDiscount = 100;
-  const proRataDiscount = 280;
+  // Dynamic pricing based on location
+  const basePrice = state.isInternational ? 29 : 900;
+  const couponDiscount = state.isInternational ? 10 : 100;
+  const proRataDiscount = state.isInternational ? 5 : 280;
+  const currency = state.isInternational ? '$' : 'KES';
 
   const calculateTotal = () => {
     let total = basePrice;
@@ -41,6 +50,17 @@ const CheckoutPage = () => {
       total -= proRataDiscount;
     }
     return total;
+  };
+
+  const handleSettingsConfirm = (settings: { isInternational: boolean; hasWeeklySubscription: boolean }) => {
+    setState(prev => ({
+      ...prev,
+      isInternational: settings.isInternational,
+      hasWeeklySubscription: settings.hasWeeklySubscription,
+      paymentMethod: 'card', // Always default to card
+      showModal: false,
+      settingsConfigured: true
+    }));
   };
 
   const handleApplyCoupon = () => {
@@ -65,7 +85,23 @@ const CheckoutPage = () => {
     console.log('Subscribe clicked', { finalPrice, paymentMethod: state.paymentMethod });
   };
 
+  const handleSettingsChange = () => {
+    setState(prev => ({ ...prev, showModal: true }));
+  };
+
   const finalPrice = calculateTotal();
+  const buttonText = state.hasWeeklySubscription ? 'Upgrade now' : 'Subscribe Now';
+
+  if (!state.settingsConfigured) {
+    return (
+      <TooltipProvider>
+        <CheckoutSettingsModal 
+          isOpen={state.showModal}
+          onSettingsConfirm={handleSettingsConfirm}
+        />
+      </TooltipProvider>
+    );
+  }
 
   return (
     <TooltipProvider>
@@ -73,34 +109,44 @@ const CheckoutPage = () => {
         <div className="container mx-auto py-4 md:py-8 px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-6 md:mb-8">
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Daily Nation Subscription</h1>
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Daily Nation Subscription</h1>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={handleSettingsChange}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <Settings className="h-4 w-4" />
+                </Button>
+              </div>
               <p className="text-gray-600">Complete your subscription to access premium content</p>
             </div>
             
             <div className="grid lg:grid-cols-2 gap-6 md:gap-8">
               {/* Left Side - Order Summary */}
-              <Card className="shadow-lg">
+              <Card className="shadow-lg h-fit">
                 <CardHeader>
                   <CardTitle className="text-lg md:text-xl font-bold text-gray-900">Order Summary</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4 md:space-y-6">
                   {/* Plan Details */}
                   <div className="border-b pb-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Monthly Plan</h3>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">Monthly Plan</h3>
                   </div>
 
                   {/* Price Breakdown */}
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
                       <span className="text-gray-700">Price</span>
-                      <span className="font-semibold">KES {basePrice}</span>
+                      <span className="font-semibold">{currency} {basePrice}</span>
                     </div>
 
                     {/* Coupon Section */}
                     {state.couponApplied && (
                       <div className="flex justify-between items-center text-green-600">
                         <span>Discount Coupon (NMG100)</span>
-                        <span>-KES {couponDiscount}</span>
+                        <span>-{currency} {couponDiscount}</span>
                       </div>
                     )}
 
@@ -111,23 +157,23 @@ const CheckoutPage = () => {
                           <span>Pro-rata Discount</span>
                           <Tooltip>
                             <TooltipTrigger>
-                              <Info className="h-4 w-4 text-gray-400 hover:text-gray-600 cursor-help" />
+                              <div className="h-4 w-4 rounded-full border border-gray-400 flex items-center justify-center text-xs text-gray-600 cursor-help">i</div>
                             </TooltipTrigger>
                             <TooltipContent className="max-w-xs p-3">
                               <p className="text-sm">
-                                When you change your subscription before it ends, you get money back for the days you didn't use. We calculate this by seeing how many days are left in your subscription period and giving you a discount based on that unused time. For example, if you paid KES 599 for a monthly subscription but only used it for 10 days out of 30, you'd get back KES 400 for the 20 unused days. This ensures you only pay for what you actually used, making subscription changes fair and worry-free.
+                                When you change your subscription before it ends, you get money back for the days you didn't use. We calculate this by seeing how many days are left in your subscription period and giving you a discount based on that unused time.
                               </p>
                             </TooltipContent>
                           </Tooltip>
                         </div>
-                        <span>-KES {proRataDiscount}</span>
+                        <span>-{currency} {proRataDiscount}</span>
                       </div>
                     )}
 
                     <div className="border-t pt-3">
                       <div className="flex justify-between items-center font-bold text-lg">
                         <span>To Pay</span>
-                        <span className="text-blue-600">KES {finalPrice}</span>
+                        <span className="text-blue-600">{currency} {finalPrice}</span>
                       </div>
                     </div>
                   </div>
@@ -141,7 +187,7 @@ const CheckoutPage = () => {
                           variant="ghost" 
                           size="sm"
                           onClick={() => setState(prev => ({ ...prev, showCouponInput: true }))}
-                          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 p-0 h-auto font-normal underline"
+                          className="text-blue-600 hover:text-blue-700 hover:bg-blue-100 p-0 h-auto font-normal underline transition-colors"
                         >
                           Click here to apply
                         </Button>
@@ -173,70 +219,60 @@ const CheckoutPage = () => {
                       </div>
                     )}
                   </div>
-
-                  {/* Test Toggles */}
-                  <div className="space-y-3 pt-4 border-t">
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="weekly"
-                        checked={state.hasWeeklySubscription}
-                        onChange={(e) => setState(prev => ({ ...prev, hasWeeklySubscription: e.target.checked }))}
-                        className="rounded"
-                      />
-                      <Label htmlFor="weekly" className="text-sm">Has Weekly Subscription</Label>
-                    </div>
-                  </div>
                 </CardContent>
               </Card>
 
               {/* Right Side - Payment Method */}
-              <Card className="shadow-lg">
+              <Card className="shadow-lg h-fit">
                 <CardHeader>
                   <CardTitle className="text-lg md:text-xl font-bold text-gray-900">Payment Method</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4 md:space-y-6">
                   <div className="space-y-3">
+                    {/* Card Payment - Always first */}
                     <div 
-                      className={`flex items-center justify-between p-4 border-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer ${
-                        state.paymentMethod === 'mpesa' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
-                      }`}
-                      onClick={() => setState(prev => ({ ...prev, paymentMethod: 'mpesa' }))}
-                    >
-                      <div>
-                        <div className="font-semibold text-base">M-PESA</div>
-                        <div className="text-sm text-gray-500">Pay with your mobile money</div>
-                      </div>
-                      <img 
-                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/M-PESA_LOGO-01.svg/2560px-M-PESA_LOGO-01.svg.png" 
-                        alt="M-PESA" 
-                        className="h-8 w-auto"
-                      />
-                    </div>
-
-                    <div 
-                      className={`flex items-center justify-between p-4 border-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer ${
+                      className={`flex items-center justify-between p-3 border-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer ${
                         state.paymentMethod === 'card' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
                       }`}
                       onClick={() => setState(prev => ({ ...prev, paymentMethod: 'card' }))}
                     >
-                      <div>
-                        <div className="font-semibold text-base">Card</div>
-                        <div className="text-sm text-gray-500">Visa, Mastercard accepted</div>
+                      <div className="flex flex-col">
+                        <div className="font-semibold text-sm">Card</div>
+                        <div className="text-xs text-gray-500">Visa, Mastercard accepted</div>
                       </div>
-                      <div className="flex space-x-2">
+                      <div className="flex space-x-1">
                         <img 
                           src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" 
                           alt="Visa" 
-                          className="h-5 w-auto"
+                          className="h-4 w-auto"
                         />
                         <img 
                           src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" 
                           alt="Mastercard" 
-                          className="h-5 w-auto"
+                          className="h-4 w-auto"
                         />
                       </div>
                     </div>
+
+                    {/* M-PESA - Only for National */}
+                    {!state.isInternational && (
+                      <div 
+                        className={`flex items-center justify-between p-3 border-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer ${
+                          state.paymentMethod === 'mpesa' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                        }`}
+                        onClick={() => setState(prev => ({ ...prev, paymentMethod: 'mpesa' }))}
+                      >
+                        <div className="flex flex-col">
+                          <div className="font-semibold text-sm">M-PESA</div>
+                          <div className="text-xs text-gray-500">Pay with your mobile money</div>
+                        </div>
+                        <img 
+                          src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/M-PESA_LOGO-01.svg/2560px-M-PESA_LOGO-01.svg.png" 
+                          alt="M-PESA" 
+                          className="h-6 w-auto"
+                        />
+                      </div>
+                    )}
                   </div>
 
                   {/* Desktop Subscribe Button */}
@@ -245,7 +281,7 @@ const CheckoutPage = () => {
                       className="w-full h-12 text-lg font-semibold bg-blue-600 hover:bg-blue-700"
                       onClick={handleSubscribe}
                     >
-                      Subscribe Now - KES {finalPrice}
+                      {buttonText} - {currency} {finalPrice}
                     </Button>
                   </div>
 
@@ -267,9 +303,15 @@ const CheckoutPage = () => {
             className="w-full h-12 text-lg font-semibold bg-blue-600 hover:bg-blue-700"
             onClick={handleSubscribe}
           >
-            Subscribe Now - KES {finalPrice}
+            {buttonText} - {currency} {finalPrice}
           </Button>
         </div>
+
+        {/* Settings Modal */}
+        <CheckoutSettingsModal 
+          isOpen={state.showModal}
+          onSettingsConfirm={handleSettingsConfirm}
+        />
       </div>
     </TooltipProvider>
   );
