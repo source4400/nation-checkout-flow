@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Settings } from 'lucide-react';
+import { Settings, Lock } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import CheckoutSettingsModal from './CheckoutSettingsModal';
 
@@ -120,19 +120,20 @@ const CheckoutPage = () => {
                   <Settings className="h-4 w-4" />
                 </Button>
               </div>
-              <p className="text-gray-600">Complete your subscription to access premium content</p>
+              <p className="text-gray-600">Join 300,000+ subscribers for expert reporting, ad-free news and puzzles</p>
             </div>
             
             <div className="grid lg:grid-cols-2 gap-6 md:gap-8">
               {/* Left Side - Order Summary */}
-              <Card className="shadow-lg h-fit">
+              <Card className="shadow-lg h-fit lg:h-full flex flex-col">
                 <CardHeader>
-                  <CardTitle className="text-lg md:text-xl font-bold text-gray-900">Order Summary</CardTitle>
+                  <CardTitle className="text-base md:text-lg font-bold text-gray-900">Order Summary</CardTitle>
+                  <p className="text-xs text-gray-500 mt-1">user@example.com</p>
                 </CardHeader>
-                <CardContent className="space-y-4 md:space-y-6">
+                <CardContent className="space-y-4 md:space-y-6 flex-1">
                   {/* Plan Details */}
                   <div className="border-b pb-4">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">Monthly Plan</h3>
+                    <h3 className="text-2xl font-semibold text-gray-900 mb-2">Monthly Plan</h3>
                   </div>
 
                   {/* Price Breakdown */}
@@ -150,11 +151,11 @@ const CheckoutPage = () => {
                       </div>
                     )}
 
-                    {/* Pro-rata Discount */}
+                    {/* Upgrade Credit */}
                     {state.hasWeeklySubscription && (
                       <div className="flex justify-between items-center text-green-600">
                         <div className="flex items-center space-x-2">
-                          <span>Pro-rata Discount</span>
+                          <span>Upgrade credit</span>
                           <Tooltip>
                             <TooltipTrigger>
                               <div className="h-4 w-4 rounded-full border border-gray-400 flex items-center justify-center text-xs text-gray-600 cursor-help">i</div>
@@ -187,7 +188,7 @@ const CheckoutPage = () => {
                           variant="ghost" 
                           size="sm"
                           onClick={() => setState(prev => ({ ...prev, showCouponInput: true }))}
-                          className="text-blue-600 hover:text-blue-700 hover:bg-blue-100 p-0 h-auto font-normal underline transition-colors"
+                          className="text-blue-600 hover:text-blue-700 hover:bg-blue-100 p-0 h-auto font-normal underline transition-colors hover:underline"
                         >
                           Click here to apply
                         </Button>
@@ -223,11 +224,11 @@ const CheckoutPage = () => {
               </Card>
 
               {/* Right Side - Payment Method */}
-              <Card className="shadow-lg h-fit">
+              <Card className="shadow-lg h-fit lg:h-full flex flex-col">
                 <CardHeader>
                   <CardTitle className="text-lg md:text-xl font-bold text-gray-900">Payment Method</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4 md:space-y-6">
+                <CardContent className="space-y-4 md:space-y-6 flex-1">
                   <div className="space-y-3">
                     {/* Card Payment - Always first */}
                     <div 
@@ -276,13 +277,19 @@ const CheckoutPage = () => {
                   </div>
 
                   {/* Desktop Subscribe Button */}
-                  <div className="hidden md:block">
+                  <div className="hidden md:block space-y-3">
                     <Button 
                       className="w-full h-12 text-lg font-semibold bg-blue-600 hover:bg-blue-700"
                       onClick={handleSubscribe}
                     >
                       {buttonText} - {currency} {finalPrice}
                     </Button>
+                    
+                    {/* Secure Transaction */}
+                    <div className="flex items-center justify-center gap-2 text-gray-500 text-sm">
+                      <Lock className="h-4 w-4" />
+                      <span>Secure transaction</span>
+                    </div>
                   </div>
 
                   {/* Contact Info */}
@@ -299,12 +306,20 @@ const CheckoutPage = () => {
 
         {/* Mobile Floating Subscribe Button */}
         <div className="md:hidden fixed bottom-0 left-0 right-0 p-4 bg-white border-t shadow-lg z-50">
-          <Button 
-            className="w-full h-12 text-lg font-semibold bg-blue-600 hover:bg-blue-700"
-            onClick={handleSubscribe}
-          >
-            {buttonText} - {currency} {finalPrice}
-          </Button>
+          <div className="space-y-3">
+            <Button 
+              className="w-full h-12 text-lg font-semibold bg-blue-600 hover:bg-blue-700"
+              onClick={handleSubscribe}
+            >
+              {buttonText} - {currency} {finalPrice}
+            </Button>
+            
+            {/* Secure Transaction - Mobile */}
+            <div className="flex items-center justify-center gap-2 text-gray-500 text-sm">
+              <Lock className="h-4 w-4" />
+              <span>Secure transaction</span>
+            </div>
+          </div>
         </div>
 
         {/* Settings Modal */}
