@@ -26,7 +26,7 @@ const CheckoutSettingsModal = ({ isOpen, onSettingsConfirm }: CheckoutSettingsMo
 
   return (
     <Dialog open={isOpen}>
-      <DialogContent className="sm:max-w-md" hideCloseButton>
+      <DialogContent className="sm:max-w-md [&>button]:hidden">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold text-center">Subscription Settings</DialogTitle>
         </DialogHeader>
