@@ -30,13 +30,13 @@ const CheckoutSettingsModal = ({ isOpen, onSettingsConfirm }: CheckoutSettingsMo
 
   return (
     <Dialog open={isOpen}>
-      <DialogContent className="sm:max-w-md [&>button]:hidden">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold text-center">Subscription Settings</DialogTitle>
         </DialogHeader>
         
         <div className="space-y-6 py-4">
-          {/* International or National */}
+          {/* Location */}
           <div className="space-y-3">
             <Label className="text-base font-semibold">Location</Label>
             <div className="space-y-2">
@@ -70,7 +70,7 @@ const CheckoutSettingsModal = ({ isOpen, onSettingsConfirm }: CheckoutSettingsMo
             </div>
           </div>
 
-          {/* Weekly Subscription */}
+          {/* Current Subscription */}
           <div className="space-y-3">
             <Label className="text-base font-semibold">Current Subscription</Label>
             <div className="space-y-2">
@@ -139,12 +139,14 @@ const CheckoutSettingsModal = ({ isOpen, onSettingsConfirm }: CheckoutSettingsMo
           </div>
         </div>
 
-        <Button 
-          onClick={handleProceed}
-          className="w-full h-12 text-lg font-semibold bg-blue-600 hover:bg-blue-700"
-        >
-          Proceed
-        </Button>
+        <div className="pt-4">
+          <Button 
+            onClick={handleProceed}
+            className="w-full h-12 text-lg font-semibold bg-blue-600 hover:bg-blue-700"
+          >
+            Proceed
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );
