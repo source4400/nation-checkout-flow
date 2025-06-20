@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,7 @@ interface CheckoutState {
   hasCoupon: boolean;
   hasWeeklySubscription: boolean;
   isInternational: boolean;
+  hasAutoAppliedCoupon: boolean;
   paymentMethod: 'mpesa' | 'card';
   showCouponInput: boolean;
   couponCode: string;
@@ -25,6 +27,7 @@ const CheckoutPage = () => {
     hasCoupon: false,
     hasWeeklySubscription: false,
     isInternational: false,
+    hasAutoAppliedCoupon: false,
     paymentMethod: 'card',
     showCouponInput: false,
     couponCode: '',
@@ -42,7 +45,7 @@ const CheckoutPage = () => {
 
   const calculateTotal = () => {
     let total = basePrice;
-    if (state.couponApplied) {
+    if (state.couponApplied || state.hasAutoAppliedCoupon) {
       total -= couponDiscount;
     }
     if (state.hasWeeklySubscription) {
@@ -51,14 +54,20 @@ const CheckoutPage = () => {
     return total;
   };
 
-  const handleSettingsConfirm = (settings: { isInternational: boolean; hasWeeklySubscription: boolean }) => {
+  const handleSettingsConfirm = (settings: { isInternational: boolean; hasWeeklySubscription: boolean; hasAutoAppliedCoupon: boolean }) => {
     setState(prev => ({
       ...prev,
       isInternational: settings.isInternational,
       hasWeeklySubscription: settings.hasWeeklySubscription,
+      hasAutoAppliedCoupon: settings.hasAutoAppliedCoupon,
       paymentMethod: 'card', // Always default to card
       showModal: false,
-      settingsConfigured: true
+      settingsConfigured: true,
+      // Auto-apply coupon logic
+      couponApplied: settings.hasAutoAppliedCoupon,
+      hasCoupon: settings.hasAutoAppliedCoupon,
+      couponCode: settings.hasAutoAppliedCoupon ? 'NMG100' : '',
+      showCouponInput: settings.hasAutoAppliedCoupon
     }));
   };
 
@@ -145,7 +154,7 @@ const CheckoutPage = () => {
                     </div>
 
                     {/* Coupon Section */}
-                    {state.couponApplied && (
+                    {(state.couponApplied || state.hasAutoAppliedCoupon) && (
                       <div className="flex justify-between items-center text-green-600">
                         <span>Discount Coupon (NMG100)</span>
                         <span>-{currency} {couponDiscount}</span>
@@ -204,10 +213,12 @@ const CheckoutPage = () => {
                             value={state.couponCode}
                             onChange={(e) => setState(prev => ({ ...prev, couponCode: e.target.value, couponError: '' }))}
                             className="flex-1"
+                            disabled={state.hasAutoAppliedCoupon}
                           />
                           <Button 
                             variant="outline"
                             onClick={handleApplyCoupon}
+                            disabled={state.hasAutoAppliedCoupon}
                           >
                             Apply
                           </Button>
@@ -215,7 +226,7 @@ const CheckoutPage = () => {
                         {state.couponError && (
                           <p className="text-red-500 text-sm">{state.couponError}</p>
                         )}
-                        {state.couponApplied && (
+                        {(state.couponApplied || state.hasAutoAppliedCoupon) && (
                           <p className="text-green-600 text-sm">Coupon applied successfully!</p>
                         )}
                       </div>
