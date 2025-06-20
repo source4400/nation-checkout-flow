@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,6 +19,8 @@ interface CheckoutState {
   couponApplied: boolean;
   showModal: boolean;
   settingsConfigured: boolean;
+  isApplyingCoupon: boolean;
+  isSubscribing: boolean;
 }
 
 const CheckoutPage = () => {
@@ -34,7 +35,9 @@ const CheckoutPage = () => {
     couponError: '',
     couponApplied: false,
     showModal: true,
-    settingsConfigured: false
+    settingsConfigured: false,
+    isApplyingCoupon: false,
+    isSubscribing: false
   });
 
   // Dynamic pricing based on location
@@ -72,25 +75,36 @@ const CheckoutPage = () => {
   };
 
   const handleApplyCoupon = () => {
-    if (state.couponCode.trim() === 'NMG100') {
-      setState(prev => ({ 
-        ...prev, 
-        couponApplied: true, 
-        couponError: '',
-        hasCoupon: true 
-      }));
-    } else {
-      setState(prev => ({ 
-        ...prev, 
-        couponError: 'Invalid coupon code',
-        couponApplied: false,
-        hasCoupon: false 
-      }));
-    }
+    setState(prev => ({ ...prev, isApplyingCoupon: true }));
+    
+    setTimeout(() => {
+      if (state.couponCode.trim() === 'NMG100') {
+        setState(prev => ({ 
+          ...prev, 
+          couponApplied: true, 
+          couponError: '',
+          hasCoupon: true,
+          isApplyingCoupon: false
+        }));
+      } else {
+        setState(prev => ({ 
+          ...prev, 
+          couponError: 'Invalid coupon code',
+          couponApplied: false,
+          hasCoupon: false,
+          isApplyingCoupon: false
+        }));
+      }
+    }, 500);
   };
 
   const handleSubscribe = () => {
-    console.log('Subscribe clicked', { finalPrice, paymentMethod: state.paymentMethod });
+    setState(prev => ({ ...prev, isSubscribing: true }));
+    
+    setTimeout(() => {
+      console.log('Subscribe clicked', { finalPrice, paymentMethod: state.paymentMethod });
+      setState(prev => ({ ...prev, isSubscribing: false }));
+    }, 500);
   };
 
   const handleSettingsChange = () => {
@@ -213,14 +227,13 @@ const CheckoutPage = () => {
                             value={state.couponCode}
                             onChange={(e) => setState(prev => ({ ...prev, couponCode: e.target.value, couponError: '' }))}
                             className="flex-1"
-                            disabled={state.hasAutoAppliedCoupon}
                           />
                           <Button 
                             variant="outline"
                             onClick={handleApplyCoupon}
-                            disabled={state.hasAutoAppliedCoupon}
+                            disabled={state.isApplyingCoupon}
                           >
-                            Apply
+                            {state.isApplyingCoupon ? 'Applying...' : 'Apply'}
                           </Button>
                         </div>
                         {state.couponError && (
@@ -293,8 +306,9 @@ const CheckoutPage = () => {
                     <Button 
                       className="w-full h-12 text-lg font-semibold bg-blue-600 hover:bg-blue-700"
                       onClick={handleSubscribe}
+                      disabled={state.isSubscribing}
                     >
-                      {buttonText} - {currency} {finalPrice}
+                      {state.isSubscribing ? 'Processing...' : `${buttonText} - ${currency} ${finalPrice}`}
                     </Button>
                     
                     {/* Secure Transaction */}
@@ -322,8 +336,9 @@ const CheckoutPage = () => {
             <Button 
               className="w-full h-12 text-lg font-semibold bg-blue-600 hover:bg-blue-700"
               onClick={handleSubscribe}
+              disabled={state.isSubscribing}
             >
-              {buttonText} - {currency} {finalPrice}
+              {state.isSubscribing ? 'Processing...' : `${buttonText} - ${currency} ${finalPrice}`}
             </Button>
             
             {/* Secure Transaction - Mobile */}
